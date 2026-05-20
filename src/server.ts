@@ -7,7 +7,7 @@ const port = config.port || 3000;
 const main = () => {
   initDB();
   app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Server changed is running at http://localhost:${port}`);
   });
 };
 
