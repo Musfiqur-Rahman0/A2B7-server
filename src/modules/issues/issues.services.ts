@@ -3,21 +3,23 @@ import { pool } from "../../db";
 
 const getAllIssuesFromDB = async (req: Request) => {
   const issues = await pool.query(`
-        SELECT * FROM issues 
-        `);
+        SELECT issues.*, users.id AS reporter_id, users.name AS reporter_name, users.role AS reporter_role FROM issues LEFT JOIN users ON users.id = issues.reporter_id
+    `);
 
-  for (const issue of issues.rows) {
-    const user = await pool.query(
-      `SELECT id, name, role FROM users WHERE id=$1`,
-      [issue.reporter_id],
-    );
+  const issuesWithReporter = issues.rows.map(
+    ({ reporter_id, reporter_name, reporter_role, ...rest }) => {
+      return {
+        ...rest,
+        reporter: {
+          id: reporter_id,
+          name: reporter_name,
+          role: reporter_role,
+        },
+      };
+    },
+  );
 
-    delete issue.reporter_id;
-
-    issue.reporter = user.rows[0];
-  }
-
-  return issues.rows;
+  return issuesWithReporter;
 };
 
 export const issuesServices = { getAllIssuesFromDB };
