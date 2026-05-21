@@ -11,7 +11,7 @@ const router = Router();
 //   });
 // });
 
-router.get("/", auth("contributor"), userController.getAllUsers);
+router.get("/", userController.getAllUsers);
 
 const userRoute = router;
 export default userRoute;

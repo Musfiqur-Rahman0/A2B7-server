@@ -4,7 +4,7 @@ import sendResponse from "../../utility/sendResponse";
 
 const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("form controller: ", (req as any).user);
+    // console.log("form controller: ", (req as any).user);
     const result = await userServices.getAllUsersFromDB();
 
     sendResponse(res, {
