@@ -66,9 +66,13 @@ const updateIssue = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const updatedData = req.body;
 
+    const user = (req as Request & { user: any }).user;
+    // console.log("User from request: ", user);
+
     const result = await issuesServices.updateIssueInDB(
       id as string,
       updatedData,
+      user,
     );
 
     sendResponse(res, {

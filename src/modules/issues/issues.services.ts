@@ -6,6 +6,7 @@ import {
   IssueType,
   SortOption,
 } from "./issues.types";
+import { ForbiddenError, NotFoundError } from "../../utility/errorResponses";
 
 const SORT_MAP: Record<SortOption, string> = {
   newest: "created_at DESC",
@@ -111,25 +112,31 @@ const getSingleIssueFromDB = async (id: string) => {
   return issueWithReporter;
 };
 
-const updateIssueInDB = async (id: string, payload: any) => {
+const updateIssueInDB = async (id: string, payload: any, user: any) => {
   const { title, description, type } = payload;
 
-  const issue = await pool.query(
-    `
-        UPDATE issues SET title = COALESCE($1, title), description = COALESCE($2, description), type = COALESCE($3, type ), updated_at = NOW() WHERE id = $4 AND status = 'open' RETURNING * 
-        `,
-    [title, description, type, id],
+  const isContributor = user.role === "contributor";
+
+  const existingIssue = await pool.query(
+    `SELECT * FROM issues WHERE id = $1 AND status = 'open'`,
+    [id],
   );
 
-  // console.log("Updated issue: ", issue.rows[0]);
-  if (issue.rows.length === 0) {
-    throw new Error(
-      JSON.stringify({
-        message: "Issue not found or the issue is not open",
-        statusCode: 404,
-      }),
-    );
+  if (existingIssue.rows.length === 0) {
+    throw new NotFoundError("Issue not found or is not open");
   }
+
+  if (isContributor && existingIssue.rows[0].reporter_id !== user.id) {
+    throw new ForbiddenError("You can only update your own issues");
+  }
+
+  const issue = await pool.query(
+    `UPDATE issues 
+     SET title = COALESCE($1, title), description = COALESCE($2, description), type = COALESCE($3, type), updated_at = NOW() 
+     WHERE id = $4 
+     RETURNING *`,
+    [title, description, type, id],
+  );
 
   return issue.rows[0];
 };

@@ -40,8 +40,8 @@ const auth = (...roles: ROLES[]) => {
 
       const user = userData.rows[0];
 
-      console.log("Decoded user from token: ", decoded); // Log the decoded token
-      console.log("User data from DB: ", user); // Log the user data from DB
+      // console.log("Decoded user from token: ", decoded); // Log the decoded token
+      // console.log("User data from DB: ", user); // Log the user data from DB
 
       // 4. Role check
       if (roles.length && !roles.includes(user.role)) {
