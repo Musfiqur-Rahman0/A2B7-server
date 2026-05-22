@@ -94,10 +94,25 @@ const getSingleIssueFromDB = async (id: string) => {
     throw new Error("Issue not found");
   }
 
-  // console.log("Issue found: ", result.rows[0]);
-
   const issueWithReporter = seperateReporterInfo(result.rows[0]);
   return issueWithReporter;
 };
 
-export const issuesServices = { getAllIssuesFromDB, getSingleIssueFromDB };
+const updateIssueInDB = async (id: string, payload: any) => {
+  const { title, description, type } = payload;
+
+  const issue = await pool.query(
+    `
+        UPDATE issues SET title = COALESCE($1, title), description = COALESCE($2, description), type = COALESCE($3, type ), updated_at = NOW() WHERE id = $4 AND status = 'open' RETURNING * 
+        `,
+    [title, description, type, id],
+  );
+
+  return issue.rows[0];
+};
+
+export const issuesServices = {
+  getAllIssuesFromDB,
+  getSingleIssueFromDB,
+  updateIssueInDB,
+};
