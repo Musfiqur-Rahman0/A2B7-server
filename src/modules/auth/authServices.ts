@@ -8,11 +8,14 @@ const signUpUserIntoDB = async (payload: any) => {
 
   const hasedPassword = await bcrypt.hash(password, 12);
 
+  const safeRole =
+    role !== "contributor" && role !== "maintainer" ? "contributor" : role;
+
   const result = await pool.query(
     `
-         INSERT INTO users(name, email, password, role) VALUES($1, $2, $3, $4) RETURNING *
+         INSERT INTO users(name, email, password, role ) VALUES($1, $2, $3, $4) RETURNING *
     `,
-    [name, email, hasedPassword, role],
+    [name, email, hasedPassword, safeRole],
   );
 
   delete result.rows[0].password;
