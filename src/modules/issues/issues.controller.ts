@@ -83,9 +83,38 @@ const updateIssue = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const deleteIssue = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const result = await issuesServices.deleteIssueFromDB(id as string);
+
+    const user = (req as Request & { user: any }).user;
+    console.log("User from request: ", user); // Log the user object
+
+    if (!result) {
+      return sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "Issue not found or already deleted",
+      });
+    }
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue deleted successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export const issuesController = {
   getAllIssues,
   getSingleIssue,
   updateIssue,
   createIssue,
+  deleteIssue,
 };
