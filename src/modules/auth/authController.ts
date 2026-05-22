@@ -9,7 +9,7 @@ const signUpUser = async (req: Request, res: Response, next: NextFunction) => {
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "User signup successfull",
+      message: "User registered successfully",
       data: result,
     });
   } catch (error) {

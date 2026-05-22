@@ -93,9 +93,6 @@ const deleteIssue = async (req: Request, res: Response, next: NextFunction) => {
 
     const result = await issuesServices.deleteIssueFromDB(id as string);
 
-    const user = (req as Request & { user: any }).user;
-    console.log("User from request: ", user); // Log the user object
-
     if (!result) {
       return sendResponse(res, {
         statusCode: 404,
@@ -108,7 +105,6 @@ const deleteIssue = async (req: Request, res: Response, next: NextFunction) => {
       statusCode: 200,
       success: true,
       message: "Issue deleted successfully",
-      data: result,
     });
   } catch (error: any) {
     next(error);
