@@ -31,6 +31,34 @@ const isValidStatus = (value: unknown): value is IssueStatus => {
   );
 };
 
+const seperateReporterInfo = (issue: any) => {
+  if (Array.isArray(issue)) {
+    const issuesWithReporter = issue.map((issue: any) => {
+      const { reporter_id, reporter_name, reporter_role, ...rest } = issue;
+      return {
+        ...rest,
+        reporter: {
+          id: reporter_id,
+          name: reporter_name,
+          role: reporter_role,
+        },
+      };
+    });
+    return issuesWithReporter;
+  }
+
+  const { reporter_id, reporter_name, reporter_role, ...rest } = issue;
+
+  return {
+    ...rest,
+    reporter: {
+      id: reporter_id,
+      name: reporter_name,
+      role: reporter_role,
+    },
+  };
+};
+
 const getAllIssuesFromDB = async (req: Request) => {
   const query = req.query as Partial<IssueQueryParams>;
 
@@ -47,20 +75,29 @@ const getAllIssuesFromDB = async (req: Request) => {
     [filteredType, filteredStatus],
   );
 
-  const issuesWithReporter = issues.rows.map(
-    ({ reporter_id, reporter_name, reporter_role, ...rest }) => {
-      return {
-        ...rest,
-        reporter: {
-          id: reporter_id,
-          name: reporter_name,
-          role: reporter_role,
-        },
-      };
-    },
-  );
+  const issuesWithReporter = seperateReporterInfo(issues.rows);
 
   return issuesWithReporter;
 };
 
-export const issuesServices = { getAllIssuesFromDB };
+const getSingleIssueFromDB = async (id: string) => {
+  console.log("Getting issue with id: ", id);
+
+  const result = await pool.query(
+    `
+       SELECT issues.*, users.id AS reporter_id, users.name AS reporter_name, users.role AS reporter_role FROM issues LEFT JOIN users ON users.id = issues.reporter_id WHERE issues.id = $1
+    `,
+    [id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Issue not found");
+  }
+
+  // console.log("Issue found: ", result.rows[0]);
+
+  const issueWithReporter = seperateReporterInfo(result.rows[0]);
+  return issueWithReporter;
+};
+
+export const issuesServices = { getAllIssuesFromDB, getSingleIssueFromDB };

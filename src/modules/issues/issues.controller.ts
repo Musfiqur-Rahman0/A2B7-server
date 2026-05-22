@@ -21,4 +21,25 @@ const getAllIssues = async (
   }
 };
 
-export const issuesController = { getAllIssues };
+const getSingleIssue = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+
+    const result = await issuesServices.getSingleIssueFromDB(id as string);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Single issue fetched successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+export const issuesController = { getAllIssues, getSingleIssue };
