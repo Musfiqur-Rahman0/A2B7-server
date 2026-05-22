@@ -59,6 +59,19 @@ const seperateReporterInfo = (issue: any) => {
   };
 };
 
+const createIssueInDB = async (user: any, payload: any) => {
+  const { title, description, type } = payload;
+  const { id: reporter_id } = user;
+  const result = await pool.query(
+    `
+        INSERT INTO issues (title, description, type, reporter_id, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *
+      `,
+    [title, description, type, reporter_id],
+  );
+
+  return result.rows[0];
+};
+
 const getAllIssuesFromDB = async (req: Request) => {
   const query = req.query as Partial<IssueQueryParams>;
 
@@ -108,6 +121,16 @@ const updateIssueInDB = async (id: string, payload: any) => {
     [title, description, type, id],
   );
 
+  // console.log("Updated issue: ", issue.rows[0]);
+  if (issue.rows.length === 0) {
+    throw new Error(
+      JSON.stringify({
+        message: "Issue not found or the issue is not open",
+        statusCode: 404,
+      }),
+    );
+  }
+
   return issue.rows[0];
 };
 
@@ -115,4 +138,5 @@ export const issuesServices = {
   getAllIssuesFromDB,
   getSingleIssueFromDB,
   updateIssueInDB,
+  createIssueInDB,
 };

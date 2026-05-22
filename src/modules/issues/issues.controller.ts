@@ -2,6 +2,25 @@ import { NextFunction, Request, Response } from "express";
 import { issuesServices } from "./issues.services";
 import sendResponse from "../../utility/sendResponse";
 
+const createIssue = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = (req as Request & { user: any }).user;
+    const payload = req.body;
+
+    // console.log("User from request: ", user); // Log the user object
+    const result = await issuesServices.createIssueInDB(user, payload);
+
+    sendResponse(res, {
+      statusCode: 201,
+      success: true,
+      message: "Issue created successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 const getAllIssues = async (
   req: Request,
   res: Response,
@@ -59,8 +78,14 @@ const updateIssue = async (req: Request, res: Response, next: NextFunction) => {
       data: result,
     });
   } catch (error: any) {
+    console.error("Error updating issue: ");
     next(error);
   }
 };
 
-export const issuesController = { getAllIssues, getSingleIssue, updateIssue };
+export const issuesController = {
+  getAllIssues,
+  getSingleIssue,
+  updateIssue,
+  createIssue,
+};

@@ -6,6 +6,8 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  // const test = JSON.parse(err);
+  // console.error("Global error handler: ", test); // Log the error
   // console.error(err.stack); // Log the error
   res.status(err.statusCode || 500).json({
     success: false,
