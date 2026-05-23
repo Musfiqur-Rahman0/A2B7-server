@@ -105,7 +105,7 @@ const getSingleIssueFromDB = async (id: string) => {
   );
 
   if (result.rows.length === 0) {
-    throw new Error("Issue not found");
+    throw new NotFoundError("Issue not found ");
   }
 
   const issueWithReporter = seperateReporterInfo(result.rows[0]);
