@@ -75,7 +75,6 @@ const createIssueInDB = async (
   user: Iuser,
   payload: createIssuePayloadSchema,
 ) => {
-  console.log(user);
   const { title, description, type } = payload;
   const { id: reporter_id } = user;
   const result = await pool.query(
@@ -105,6 +104,10 @@ const getAllIssuesFromDB = async (req: Request) => {
   );
 
   const issuesWithReporter = seperateReporterInfo(issues.rows);
+
+  if (issuesWithReporter.length === 0) {
+    throw new NotFoundError("No issues found");
+  }
 
   return issuesWithReporter;
 };
