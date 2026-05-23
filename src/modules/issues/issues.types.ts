@@ -7,3 +7,15 @@ export interface IssueQueryParams {
   type: string;
   status: string;
 }
+
+export interface createIssuePayloadSchema {
+  title: string;
+  description?: string;
+  type: IssueType;
+}
+export interface Iuser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}

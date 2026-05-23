@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { issuesServices } from "./issues.services";
 import sendResponse from "../../utility/sendResponse";
+import { Iuser } from "./issues.types";
 
 const createIssue = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = (req as Request & { user: any }).user;
+    const user = (req as Request & { user: Iuser }).user;
     const payload = req.body;
 
     // console.log("User from request: ", user); // Log the user object

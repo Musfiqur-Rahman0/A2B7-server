@@ -1,9 +1,11 @@
 import { Request } from "express";
 import { pool } from "../../db";
 import {
+  createIssuePayloadSchema,
   IssueQueryParams,
   IssueStatus,
   IssueType,
+  Iuser,
   SortOption,
 } from "./issues.types";
 import { ForbiddenError, NotFoundError } from "../../utility/errorResponses";
@@ -60,7 +62,11 @@ const seperateReporterInfo = (issue: any) => {
   };
 };
 
-const createIssueInDB = async (user: any, payload: any) => {
+const createIssueInDB = async (
+  user: Iuser,
+  payload: createIssuePayloadSchema,
+) => {
+  console.log(user);
   const { title, description, type } = payload;
   const { id: reporter_id } = user;
   const result = await pool.query(
@@ -112,7 +118,12 @@ const getSingleIssueFromDB = async (id: string) => {
   return issueWithReporter;
 };
 
-const updateIssueInDB = async (id: string, payload: any, user: any) => {
+const updateIssueInDB = async (
+  id: string,
+  payload: createIssuePayloadSchema,
+  user: Iuser,
+) => {
+  console.log(user);
   const { title, description, type } = payload;
 
   const isContributor = user.role === "contributor";
