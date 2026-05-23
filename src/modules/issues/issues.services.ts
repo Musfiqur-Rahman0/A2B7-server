@@ -135,13 +135,12 @@ const updateIssueInDB = async (
   payload: createIssuePayloadSchema,
   user: Iuser,
 ) => {
-  console.log(user);
   const { title, description, type } = payload;
 
   const isContributor = user.role === "contributor";
 
   const existingIssue = await pool.query(
-    `SELECT * FROM issues WHERE id = $1 AND status = 'open'`,
+    `SELECT * FROM issues WHERE id = $1 ${isContributor ? "AND status = 'open'" : ""}`,
     [id],
   );
 
