@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { authServices } from "./authServices";
 import sendResponse from "../../utility/sendResponse";
+import { signUpUserPayloadSchema } from "./user.types";
 
 const signUpUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await authServices.signUpUserIntoDB(req.body);
+    const result = await authServices.signUpUserIntoDB(
+      req.body as signUpUserPayloadSchema,
+    );
 
     sendResponse(res, {
       statusCode: 201,

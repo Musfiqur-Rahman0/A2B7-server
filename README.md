@@ -97,24 +97,16 @@ npm install
 
 ## 3. Create `.env` File
 
-```env
+````env
 PORT=5000
 
-DATABASE_URL=your_postgresql_connection_string
-
 JWT_SECRET=your_super_secret_jwt_key
-JWT_EXPIRES_IN=7d
-
-BCRYPT_SALT_ROUNDS=10
-
-NODE_ENV=development
-```
 
 ### Example PostgreSQL Connection String
 
 ```env
-DATABASE_URL=postgresql://username:password@localhost:5432/devpulse
-```
+CONNECTION_STRING=postgresql://username:password@localhost:5432/devpulse
+````
 
 ---
 

@@ -37,7 +37,14 @@ const isValidStatus = (value: unknown): value is IssueStatus => {
 const seperateReporterInfo = (issue: any) => {
   if (Array.isArray(issue)) {
     const issuesWithReporter = issue.map((issue: any) => {
-      const { reporter_id, reporter_name, reporter_role, ...rest } = issue;
+      const {
+        reporter_id,
+        reporter_name,
+        reporter_role,
+        created_at,
+        updated_at,
+        ...rest
+      } = issue;
       return {
         ...rest,
         reporter: {
@@ -45,6 +52,8 @@ const seperateReporterInfo = (issue: any) => {
           name: reporter_name,
           role: reporter_role,
         },
+        created_at,
+        updated_at,
       };
     });
     return issuesWithReporter;
